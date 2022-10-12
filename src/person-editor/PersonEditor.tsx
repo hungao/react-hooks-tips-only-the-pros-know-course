@@ -1,11 +1,33 @@
-import React, { ReactElement } from "react"
+import localforage from "localforage"
+import React, { ReactElement, useState, useEffect } from "react"
+import type { Person } from '../types/person';
 
-import { LabeledInput } from "../components"
+import { LabeledInput, Loading } from "../components"
 import { initialPerson } from "../utils"
 
-export function PersonEditor(): ReactElement {
-  const person = initialPerson
+function savePerson(person:Person|null):void{
+  console.log('Saving',person);
+  localforage.setItem('person',person);
+}
 
+export function PersonEditor(): ReactElement {
+  const [person, setPerson] = useState<Person | null>(null);
+
+  useEffect(()=>{
+    const getPerson = async () => {
+      const person = await localforage.getItem<Person>("person");
+      setPerson(person ?? initialPerson);
+    };
+    getPerson();
+  },[]);
+
+  useEffect(()=>{
+    savePerson(person);
+  },[person]);
+
+  if(!person){
+    return <Loading />;
+  }
   return (
     <form
       className="person-editor"
@@ -19,43 +41,35 @@ export function PersonEditor(): ReactElement {
         label="Firstname:"
         value={person.firstname}
         onChange={(e) => {
-          const newPerson = {
-            ...person,
-            firstname: e.target.value,
-          }
-          console.log("Updated person:", newPerson)
+          setPerson(state => ({...state!, firstname: e.target.value}));
         }}
       />
       <LabeledInput
         label="Surname:"
         value={person.surname}
         onChange={(e) => {
-          const newPerson = { ...person, surname: e.target.value }
-          console.log("Updated person:", newPerson)
+          setPerson(state => ({...state!, surname: e.target.value}));
         }}
       />
       <LabeledInput
         label="Email:"
         value={person.email}
         onChange={(e) => {
-          const newPerson = { ...person, email: e.target.value }
-          console.log("Updated person:", newPerson)
+          setPerson(state => ({...state!, email: e.target.value}));
         }}
       />
       <LabeledInput
         label="Address:"
         value={person.address}
         onChange={(e) => {
-          const newPerson = { ...person, address: e.target.value }
-          console.log("Updated person:", newPerson)
+          setPerson(state => ({...state!, address: e.target.value}));
         }}
       />
       <LabeledInput
         label="Phone:"
         value={person.phone}
         onChange={(e) => {
-          const newPerson = { ...person, phone: e.target.value }
-          console.log("Updated person:", newPerson)
+          setPerson(state => ({...state!, phone: e.target.value}));
         }}
       />
       <hr />
