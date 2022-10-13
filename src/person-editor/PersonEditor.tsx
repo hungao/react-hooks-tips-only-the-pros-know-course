@@ -1,29 +1,17 @@
-import localforage from "localforage"
-import React, { ReactElement, useState, useEffect } from "react"
-import type { Person } from '../types/person';
+import React, { ReactElement, useState, useEffect, useRef } from "react"
 
 import { LabeledInput, Loading } from "../components"
 import { initialPerson } from "../utils"
-
-function savePerson(person:Person|null):void{
-  console.log('Saving',person);
-  localforage.setItem('person',person);
-}
+import { usePerson } from "./usePerson";
 
 export function PersonEditor(): ReactElement {
-  const [person, setPerson] = useState<Person | null>(null);
-
+  const [person, setPerson] = usePerson(initialPerson);
+  const input = useRef<HTMLButtonElement>(null);
   useEffect(()=>{
-    const getPerson = async () => {
-      const person = await localforage.getItem<Person>("person");
-      setPerson(person ?? initialPerson);
-    };
-    getPerson();
+    setTimeout(() => {
+      input.current?.focus();
+    }, 1000);
   },[]);
-
-  useEffect(()=>{
-    savePerson(person);
-  },[person]);
 
   if(!person){
     return <Loading />;
@@ -38,6 +26,7 @@ export function PersonEditor(): ReactElement {
     >
       <h2>Person Editor</h2>
       <LabeledInput
+        ref={input}
         label="Firstname:"
         value={person.firstname}
         onChange={(e) => {
