@@ -5,7 +5,7 @@ import { initialPerson } from "../utils"
 import { usePerson } from "./usePerson";
 
 export function PersonEditor(): ReactElement {
-  const [person, setPerson, { isDirty, isValid }] = usePerson(initialPerson);
+  const [person, setProperty, setProperties, { isDirty, isValid }] = usePerson(initialPerson);
   const input = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     setTimeout(() => {
@@ -31,35 +31,44 @@ export function PersonEditor(): ReactElement {
         value={person.firstname}
         onChange={(e) => {
           console.log(`=> person changed`);
-          setPerson(state => ({ ...state!, firstname: e.target.value }));
+          setProperty("firstname", e.target.value);
+
+          if (e.target.value == "ford") {
+            setProperties({
+              "surname": "perfect",
+              "address": "outer space",
+              "email": "",
+              "phone": ""
+            });
+          }
         }}
       />
       <LabeledInput
         label="Surname:"
         value={person.surname}
         onChange={(e) => {
-          setPerson(state => ({ ...state!, surname: e.target.value }));
+          setProperty("surname", e.target.value);
         }}
       />
       <LabeledInput
         label="Email:"
         value={person.email}
         onChange={(e) => {
-          setPerson(state => ({ ...state!, email: e.target.value }));
+          setProperty("email", e.target.value);
         }}
       />
       <LabeledInput
         label="Address:"
         value={person.address}
         onChange={(e) => {
-          setPerson(state => ({ ...state!, address: e.target.value }));
+          setProperty("address", e.target.value);
         }}
       />
       <LabeledInput
         label="Phone:"
         value={person.phone}
         onChange={(e) => {
-          setPerson(state => ({ ...state!, phone: e.target.value }));
+          setProperty("phone", e.target.value);
         }}
       />
       <hr />
