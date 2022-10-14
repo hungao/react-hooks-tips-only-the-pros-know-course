@@ -6,6 +6,8 @@ import type { Person } from '../types/person';
 import { useIsMounted } from '../hooks/useIsMounted';
 import { useDebounce } from '../hooks/useDebounce';
 import { useWillUnmount } from '../hooks/useWillUnmount';
+import { useThrottle } from '../hooks/useThrottle';
+
 
 function savePerson(person: Person | null): void {
   console.log(`Saving person: ${JSON.stringify(person)}`);
@@ -48,7 +50,7 @@ export function usePerson(initialPerson: Person) {
     savePerson(person);
   }, [person]);
 
-  useDebounce(saveFn, 1000);
+  useThrottle(saveFn, 1000);
   useWillUnmount(saveFn);
 
   return [person, setPerson] as const;
