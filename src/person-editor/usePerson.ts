@@ -1,16 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import localforage from 'localforage';
 import { sleep } from '../utils';
 
 import type { Person } from '../types/person';
 import { useIsMounted } from '../hooks/useIsMounted';
+import { useDebounce } from  '../hooks/useDebounce';
 
 function savePerson(person:Person|null):void{
-    console.log('Saving',person);
+    console.log(`Saving person: ${JSON.stringify(person)}`);
     localforage.setItem('person',person);
 }
 
 export function usePerson(initialPerson: Person){
+    console.log(`exec usePerson()`);
     const [person, setPerson] = useState<Person | null>(null);
     const isMounted = useIsMounted();
 
@@ -27,11 +29,25 @@ export function usePerson(initialPerson: Person){
         }
       };
       getPerson();
-    },[initialPerson]);
+    },[initialPerson, isMounted]);
+
+    const [, setNow] = useState(new Date());
+    useEffect(() => { 
+      const handle = setInterval(() => {
+        const t = new Date();
+        console.log(`=> usePerson state changed!`)
+        setNow(t);
+      }, 5000);
+
+      return () => clearInterval(handle);
+    }, []);
+
+    const saveFn = useCallback(() => { 
+      console.log(`useCallback`);
+      savePerson(person); 
+    }, [person]);
   
-    useEffect(()=>{
-      savePerson(person);
-    },[person]);
+    useDebounce(saveFn, 1000);
     
     return [person, setPerson] as const;
 }

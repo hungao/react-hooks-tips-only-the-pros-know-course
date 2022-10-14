@@ -30,6 +30,7 @@ export function PersonEditor(): ReactElement {
         label="Firstname:"
         value={person.firstname}
         onChange={(e) => {
+          console.log(`=> person changed`);
           setPerson(state => ({...state!, firstname: e.target.value}));
         }}
       />
